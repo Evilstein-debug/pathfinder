@@ -12,6 +12,10 @@ export const register = async (req, res) => {
                 message: "All fields are required!"
             })
         }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if(!emailRegex.test(email)){
+            res.status(400).json({message: "Enter a valid email address."})
+        }
         const existingUser = await User.findOne({
             $or: [{email}, {username}]
         })
