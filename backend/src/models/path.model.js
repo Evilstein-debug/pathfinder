@@ -10,23 +10,23 @@ const pathSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    goalType: {
+    goalType: {     //from user
         type: String,
         enum: ["shortTerm", "longTerm"],
         required: true
     },
-    timeframe: {        //in months, weeks or years
+    timeframe: {        //from user (in months, weeks or years)
         type: Number,
         required: true
     },
     feasibilityScore: {
         type: Number,
-        required: true
+        // required: true
     },
-    checkpoints: {
+    checkpoints: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Checkpoint"
-    }
+    }]
 }, {timestamps: true})
 
 export default mongoose.model("Path", pathSchema)

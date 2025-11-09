@@ -5,18 +5,18 @@ export const createPath = async (req, res) => {
     try {
         const {title, goalType, timeframe, checkpoints} = req.body
 
-        if(!title || !goalType || timeframe) {
+        if(!title || !goalType || !timeframe) {
             return res.status(400).json({
-                message: "Required fields are missins."
+                message: "Required fields are missing."
             })
         }
 
         const path = await Path.create({
-            user: req.user,
+            user: req.user._id,
             title,
             goalType,
             timeframe,
-            feasibilityScore
+            // feasibilityScore
         })
 
         if(Array.isArray(checkpoints) && checkpoints.length > 0) {
@@ -30,7 +30,7 @@ export const createPath = async (req, res) => {
 
             const savedCheckpoints = await Checkpoint.insertMany(checkpointDocs)
 
-            path.checkpoints = savedCheckpoints.map((cp) => {cp._id})
+            path.checkpoints = savedCheckpoints.map((cp) => cp._id)
             await path.save()
         }
         res.status(201).json({
@@ -47,7 +47,7 @@ export const createPath = async (req, res) => {
 
 export const getAllPaths = async (req, res) => {
     try {
-        const paths = await Path.find({user: req.user})
+        const paths = await Path.find({user: req.user._id})
         .populate("checkpoints")
         .sort({createdAt: -1})
 
@@ -64,12 +64,12 @@ export const getAllPaths = async (req, res) => {
 export const getSinglePath = async (req, res) => {
     try {
         const {id} = req.params
-        const path = await Path.findOne({_id: id, user: req.user})
+        const path = await Path.findOne({_id: id, user: req.user._id})
         .populate("checkpoints")
 
         if(!path) return res.status(404).json({message: "Path not found!"})
 
-        return res.status(500).json(path)
+        return res.status(200).json(path)
     }
     catch (error) {
         res.status(500).json({
@@ -84,8 +84,8 @@ export const updatePath = async (req, res) => {
         const {id} = req.params
         const updates = req.body
 
-        const path = await Path.findByIdAndUpdate(
-            {_id: id, user: req.user},
+        const path = await Path.findOneAndUpdate(
+            {_id: id, user: req.user._id},
             updates,
             {new: true}
         ).populate("checkpoints")
@@ -108,12 +108,12 @@ export const deletePath = async (req, res) => {
 
         const path = await Path.findOne({
             _id: id,
-            user: req.user
+            user: req.user._id
         })
         if(!path) return res.status(404).json({message: "Path not found!"})
 
         await Checkpoint.deleteMany({pathID: id})
-        await Path.deleteOne()
+        await Path.deleteOne({_id: id})
 
         res.status(200).json({message: "Path and checkpoints deleted successfully."})
     } catch (error) {
