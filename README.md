@@ -1,6 +1,6 @@
-# 🧭 PathFinder — AI Career Roadmap Generator
+# 🧭 Pathfinder — AI Career Roadmap Generator
 
-PathFinder is an **AI-powered learning path generator** that helps users design personalized, goal-based career roadmaps.
+Pathfinder is an **AI-powered learning path generator** that helps users design personalized, goal-based career roadmaps.
 
 Built with the **MERN stack** (MongoDB, Express, React, Node.js) and **Gemini AI**, it creates structured learning plans based on user goals, available time, and effort — and lets them **track progress** with interactive checkpoints.
 
