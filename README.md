@@ -239,8 +239,8 @@ POST /api/ai/generate-path
 ## 👨‍💻 Author
 
 **Tejas Pathak**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
+- GitHub: [@Evilstein-debug](https://github.com/Evilstein-debug)
+- LinkedIn: [Your LinkedIn](https://www.linkedin.com/in/tejas-pathak-8b289a283/)
 
 ---
 
