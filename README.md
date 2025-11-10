@@ -240,7 +240,7 @@ POST /api/ai/generate-path
 
 **Tejas Pathak**
 - GitHub: [@Evilstein-debug](https://github.com/Evilstein-debug)
-- LinkedIn: [Your LinkedIn](https://www.linkedin.com/in/tejas-pathak-8b289a283/)
+- LinkedIn: [My LinkedIn](https://www.linkedin.com/in/tejas-pathak-8b289a283/)
 
 ---
 
