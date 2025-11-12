@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js"
 import pathRoutes from "./routes/pathRoutes.js"
 import checkpointRoutes from "./routes/checkpointRoutes.js"
+import aiRoutes from "./routes/aiRoutes.js"
 
 const port = process.env.PORT || 8000
 
@@ -20,6 +21,7 @@ app.get('/', (req, res) => {
 app.use("/api/auth", authRoutes)
 app.use("/api/paths", pathRoutes)
 app.use("/api/checkpoints", checkpointRoutes)
+app.use("/api/ai", aiRoutes)
 
 connectDB()
 .then(() => {
