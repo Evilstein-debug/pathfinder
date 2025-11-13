@@ -3,18 +3,37 @@ import "dotenv/config";
 
 const genAI = new GoogleGenAI(process.env.GEMINI_API_KEY);
 
-export const generatePathWithAI = async (goalType, timeframe, userGoalDescription = "") => {
-    try {
-        // const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+export const generatePathWithAI = async (
+  goalType, 
+  timeframe, 
+  userGoalDescription = "",
+  previousContext = null
+) => {
+  try {
+    const timeframeUnit = goalType === "shortTerm" ? "months" : "years";
+    
+    let contextSection = "";
+    if (previousContext) {
+      contextSection = `
 
-        const timeframeUnit = goalType === "shortTerm" ? "months" : "years";
-        
-        const prompt = `
+PREVIOUS PATH CONTEXT (User is regenerating):
+${previousContext}
+
+Important: This is a regeneration request. Consider:
+1. What worked well in the previous structure
+2. What needs improvement based on new timeframe or feedback
+3. Maintain logical progression while addressing user's concerns
+4. Build upon the previous checkpoints structure
+`;
+    }
+
+    const prompt = `
 You are a career learning path expert. Generate a personalized learning roadmap based on the following:
 
 - Goal Type: ${goalType}
 - Timeframe: ${timeframe} ${timeframeUnit}
-${userGoalDescription ? `- User's Goal: ${userGoalDescription}` : ""}
+${userGoalDescription ? `- User's Feedback/Goal: ${userGoalDescription}` : ""}
+${contextSection}
 
 Generate a JSON response with:
 1. A clear, specific path title (e.g., "Frontend Developer Path", "Data Science Mastery")
@@ -26,6 +45,7 @@ Generate a JSON response with:
    - Timeframe adequacy
    - Checkpoint progression logic
    - Industry standards
+   ${previousContext ? '- Improvements from previous version' : ''}
 
 Return ONLY valid JSON in this exact format:
 {
@@ -42,36 +62,36 @@ Return ONLY valid JSON in this exact format:
 }
 
 Make the path realistic, progressive, and achievable within ${timeframe} ${timeframeUnit}.
+${previousContext ? 'Consider the previous path and improve upon it based on user feedback.' : ''}
 `;
 
+    const response = await genAI.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt
+    });
 
-        const response = await genAI.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: prompt
-        })
+    const text = response.text;
 
-        const text = response.text
-
-        // Clean and parse JSON (handle markdown code blocks)
-        let jsonText = text.trim();
-        if (jsonText.startsWith("```json")) {
-            jsonText = jsonText.replace(/```json\n?/g, "").replace(/```\n?$/g, "");
-        } else if (jsonText.startsWith("```")) {
-            jsonText = jsonText.replace(/```\n?/g, "").replace(/```\n?$/g, "");
-        }
-
-        const aiResponse = JSON.parse(jsonText);
-
-        return {
-            success: true,
-            data: aiResponse
-        };
-
-    } catch (error) {
-        console.error("Gemini API Error:", error);
-        return {
-            success: false,
-            error: error.message
-        };
+    // Clean and parse JSON
+    let jsonText = text.trim();
+    if (jsonText.startsWith("```json")) {
+      jsonText = jsonText.replace(/```json\n?/g, "").replace(/```\n?$/g, "");
+    } else if (jsonText.startsWith("```")) {
+      jsonText = jsonText.replace(/```\n?/g, "").replace(/```\n?$/g, "");
     }
+
+    const aiResponse = JSON.parse(jsonText);
+
+    return {
+      success: true,
+      data: aiResponse
+    };
+
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
 };
