@@ -29,7 +29,8 @@ export const storePathMemory = async (userId, pathId, pathData) => {
     const result = await supermemory.memories.add({
       content: memoryContent,
       spaces: ["pathfinder"],
-      metadata: { userId, pathId, type: "learning_path" }
+      metadata: { userId, pathId, type: "learning_path" },
+      containerTag: "path"
     });
 
     // Cache the memory ID for faster retrieval
