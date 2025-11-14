@@ -1,5 +1,6 @@
 import Path from "../models/path.model.js"
 import Checkpoint from "../models/checkpoint.model.js"
+import { clearMemoryCache } from "../services/supermemory.service.js"
 
 export const createPath = async (req, res) => {
     try {
@@ -114,6 +115,9 @@ export const deletePath = async (req, res) => {
 
         await Checkpoint.deleteMany({pathID: id})
         await Path.deleteOne({_id: id})
+        
+        // Clear memory cache
+        clearMemoryCache(id)
 
         res.status(200).json({message: "Path and checkpoints deleted successfully."})
     } catch (error) {

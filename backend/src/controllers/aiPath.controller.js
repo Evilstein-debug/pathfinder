@@ -3,6 +3,7 @@ import Checkpoint from "../models/checkpoint.model.js";
 import { generatePathWithAI } from "../services/ai.service.js";
 import { 
   storePathMemory, 
+  updatePathMemory,
   getPathMemory,
   getUserPathHistory 
 } from "../services/supermemory.service.js";
@@ -124,12 +125,20 @@ export const regenerateAIPath = async (req, res) => {
     }
 
     // Get previous context from Supermemory
+    console.log(`🔍 Searching for memory with pathId: ${pathId}`);
     const memoryResult = await getPathMemory(
-      req.user._id.toString(),
+      req.user._id,
       pathId
     );
 
     const previousContext = memoryResult.success ? memoryResult.context : null;
+    
+    if (previousContext) {
+      console.log("✅ Found previous context:");
+      console.log(previousContext.substring(0, 200) + "...");
+    } else {
+      console.log("⚠️ No previous context found, generating from scratch");
+    }
 
     // Delete old checkpoints
     await Checkpoint.deleteMany({ pathID: pathId });
@@ -173,8 +182,8 @@ export const regenerateAIPath = async (req, res) => {
       await existingPath.save();
     }
 
-    // Update Supermemory with new version
-    await storePathMemory(req.user._id.toString(), pathId, {
+    // UPDATE existing memory instead of deleting and creating new one
+    await updatePathMemory(req.user._id.toString(), pathId, {
       title: pathTitle,
       goalType: existingPath.goalType,
       timeframe: existingPath.timeframe,
@@ -190,7 +199,6 @@ export const regenerateAIPath = async (req, res) => {
       path: updatedPath,
       usedPreviousContext: !!previousContext
     });
-    console.log(previousContext)
 
   } catch (error) {
     console.error("Regenerate path error:", error);
