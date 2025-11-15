@@ -5,7 +5,7 @@ import {
   storePathMemory, 
   updatePathMemory,
   getPathMemory,
-  getUserPathHistory 
+  getUserPathHistory    //will be used to implement more personalization based on user's history
 } from "../services/supermemory.service.js";
 
 // @desc    Generate AI-powered learning path
@@ -125,7 +125,7 @@ export const regenerateAIPath = async (req, res) => {
     }
 
     // Get previous context from Supermemory
-    console.log(`🔍 Searching for memory with pathId: ${pathId}`);
+    console.log(`Searching for memory with pathId: ${pathId}`);
     const memoryResult = await getPathMemory(
       req.user._id,
       pathId
@@ -134,10 +134,10 @@ export const regenerateAIPath = async (req, res) => {
     const previousContext = memoryResult.success ? memoryResult.context : null;
     
     if (previousContext) {
-      console.log("✅ Found previous context:");
+      console.log("Found previous context:");
       console.log(previousContext.substring(0, 200) + "...");
     } else {
-      console.log("⚠️ No previous context found, generating from scratch");
+      console.log("No previous context found, generating from scratch");
     }
 
     // Delete old checkpoints
