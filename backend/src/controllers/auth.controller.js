@@ -167,6 +167,55 @@ export const refreshAccessToken = async (req, res) => {
     }
 };
 
+// Social login (Google, GitHub, etc.)
+export const oauthLogin = async (req, res) => {
+  try {
+    const { email, username, provider } = req.body
+
+    if (!email || !username || !provider) {
+      return res.status(400).json({
+        message: "Email, username, and provider are required"
+      })
+    }
+
+    let user = await User.findOne({ email })
+
+    if (!user) {
+      user = await User.create({
+        username,
+        email,
+        password: `${provider}_${Date.now()}` //dummy password
+      })
+      console.log(`New social user created: ${email} via ${provider}`)
+    }
+
+    const { accessToken, refreshToken } = generateTokens(user._id)
+
+    user.refreshToken = refreshToken
+    await user.save()
+
+    const userResponse = {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      createdAt: user.createdAt
+    }
+
+    res.status(200).json({
+      message: "Social login successful",
+      user: userResponse,
+      accessToken,
+      refreshToken
+    })
+  } catch (error) {
+    console.error("Social login error:", error)
+    res.status(500).json({
+      message: "Error with social login",
+      error: error.message
+    })
+  }
+}
+
 // logout
 // @route   POST /api/auth/logout
 export const logout = async (req, res) => {

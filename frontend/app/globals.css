@@ -1,0 +1,41 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+:root {
+  --text-primary: #E5E5E8;
+  --text-secondary: #A7A7B0;
+  --button-primary-bg: #D1D1D6;
+  --button-primary-text: #000000;
+  --button-secondary-bg: rgba(255,255,255,0.05);
+  --button-secondary-border: rgba(255,255,255,0.1);
+  --button-secondary-text: #A7A7B0;
+}
+
+body {
+  background: #000000;
+  color: var(--text-primary);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
