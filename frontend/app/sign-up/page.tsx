@@ -3,39 +3,60 @@
 import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { login } from '@/lib/api/auth'
+import { register } from '@/lib/api/auth'
 import Link from 'next/link'
 
-export default function SignInPage() {
+export default function SignUpPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  // Email/Password Login
-  const handleEmailLogin = async (e: React.FormEvent) => {
+  // Email/Password Registration
+  const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
 
+    // Validation
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match')
+      setLoading(false)
+      return
+    }
+
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters')
+      setLoading(false)
+      return
+    }
+
     try {
-      const data = await login({ email, password })
+      const data = await register({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password
+      })
       
-      // Store tokens in localStorage
+      // Store tokens
       localStorage.setItem('accessToken', data.accessToken)
       localStorage.setItem('refreshToken', data.refreshToken)
       
       router.push('/dashboard')
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed')
+      setError(err.response?.data?.message || 'Registration failed')
     } finally {
       setLoading(false)
     }
   }
 
-  // Google OAuth Login
-  const handleGoogleLogin = () => {
+  // Google OAuth Sign Up
+  const handleGoogleSignUp = () => {
     signIn('google', { callbackUrl: '/dashboard' })
   }
 
@@ -74,10 +95,10 @@ export default function SignInPage() {
             <h1 className="
               font-(family-name:--font-playfair) text-3xl font-semibold text-[#E5E5E8] mb-2
             ">
-              Welcome Back
+              Start Your Journey
             </h1>
             <p className="text-[#A7A7B0] text-sm">
-              Sign in to continue your journey
+              Create your account and unlock your potential
             </p>
           </div>
 
@@ -94,7 +115,7 @@ export default function SignInPage() {
 
           {/* Google OAuth Button */}
           <button
-            onClick={handleGoogleLogin}
+            onClick={handleGoogleSignUp}
             className="
               w-full flex items-center justify-center gap-3
               px-6 py-3.5 rounded-2xl
@@ -133,12 +154,33 @@ export default function SignInPage() {
               <div className="w-full border-t border-white/8"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-transparent text-[#A7A7B0]">Or sign in with email</span>
+              <span className="px-4 bg-transparent text-[#A7A7B0]">Or sign up with email</span>
             </div>
           </div>
 
           {/* Email/Password Form */}
-          <form onSubmit={handleEmailLogin} className="space-y-4">
+          <form onSubmit={handleEmailSignUp} className="space-y-4">
+            {/* Username Input */}
+            <div>
+              <label className="block text-sm font-medium text-[#A7A7B0] mb-2">
+                Username
+              </label>
+              <input
+                type="text"
+                placeholder="johndoe"
+                value={formData.username}
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                className="
+                  w-full px-4 py-3 rounded-2xl
+                  bg-white/3 border border-white/8
+                  text-[#E5E5E8] placeholder:text-[#A7A7B0]/50
+                  focus:outline-none focus:border-white/15
+                  transition-colors
+                "
+                required
+              />
+            </div>
+
             {/* Email Input */}
             <div>
               <label className="block text-sm font-medium text-[#A7A7B0] mb-2">
@@ -147,8 +189,8 @@ export default function SignInPage() {
               <input
                 type="email"
                 placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="
                   w-full px-4 py-3 rounded-2xl
                   bg-white/3 border border-white/8
@@ -168,8 +210,8 @@ export default function SignInPage() {
               <input
                 type="password"
                 placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className="
                   w-full px-4 py-3 rounded-2xl
                   bg-white/3 border border-white/8
@@ -178,17 +220,30 @@ export default function SignInPage() {
                   transition-colors
                 "
                 required
+                minLength={8}
               />
             </div>
 
-            {/* Forgot Password */}
-            <div className="text-right">
-              <Link 
-                href="/forgot-password"
-                className="text-sm text-[#A7A7B0] hover:text-[#E5E5E8] transition-colors"
-              >
-                Forgot password?
-              </Link>
+            {/* Confirm Password Input */}
+            <div>
+              <label className="block text-sm font-medium text-[#A7A7B0] mb-2">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                className="
+                  w-full px-4 py-3 rounded-2xl
+                  bg-white/3 border border-white/8
+                  text-[#E5E5E8] placeholder:text-[#A7A7B0]/50
+                  focus:outline-none focus:border-white/15
+                  transition-colors
+                "
+                required
+                minLength={8}
+              />
             </div>
 
             {/* Submit Button */}
@@ -224,22 +279,34 @@ export default function SignInPage() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Signing in...
+                  Creating account...
                 </span>
               ) : (
-                'Sign In'
+                'Create Account'
               )}
             </button>
           </form>
 
-          {/* Sign Up Link */}
+          {/* Sign In Link */}
           <p className="text-center text-sm text-[#A7A7B0] mt-6">
-            Don't have an account?{' '}
+            Already have an account?{' '}
             <Link 
-              href="/sign-up" 
+              href="/sign-in" 
               className="text-[#E5E5E8] hover:underline font-medium"
             >
-              Sign up
+              Sign in
+            </Link>
+          </p>
+
+          {/* Terms */}
+          <p className="text-center text-xs text-[#A7A7B0]/70 mt-6">
+            By signing up, you agree to our{' '}
+            <Link href="/terms" className="underline hover:text-[#A7A7B0]">
+              Terms of Service
+            </Link>
+            {' '}and{' '}
+            <Link href="/privacy" className="underline hover:text-[#A7A7B0]">
+              Privacy Policy
             </Link>
           </p>
         </div>

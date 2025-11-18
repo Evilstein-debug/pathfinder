@@ -11,16 +11,15 @@ const LightRays = dynamic(() => import('@/components/LightRays'), {
 export default function LandingPage() {
   return (
     <main className="relative min-h-screen bg-black overflow-hidden">
-      {/* Animated Light Rays Background */}
       <div className="fixed inset-0 z-0">
         <LightRays
           raysOrigin="top-center"
           raysColor="#ffffff"
-          raysSpeed={2}
-          lightSpread={6}
+          raysSpeed={1}
+          lightSpread={8}
           rayLength={10}
           pulsating={false}
-          fadeDistance={2}
+          fadeDistance={5}
           saturation={2}
           followMouse={true}
           mouseInfluence={0.5}
@@ -73,7 +72,7 @@ export default function LandingPage() {
         {/* Footer */}
         <footer className="border-t border-white/8 py-12">
           <div className="max-w-6xl mx-auto px-6 text-center text-[#A7A7B0]">
-            <p>© 2024 Pathfinder. Built by Tejas Pathak.</p>
+            <p>© 2025 Pathfinder. Built by Tejas Pathak.</p>
           </div>
         </footer>
       </div>
