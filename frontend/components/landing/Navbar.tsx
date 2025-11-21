@@ -25,7 +25,7 @@ export default function Navbar() {
       <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-7xl px-4 lg:px-10">
         <div 
           className={`
-            h-20 px-6 lg:px-10 rounded-[40px] 
+            h-20 px-6 lg:px-10 rounded-[30px] 
             backdrop-blur-[20px]
             bg-white/4
             border border-white/8
@@ -86,9 +86,10 @@ export default function Navbar() {
             <Link 
               href="/sign-in"
               className="
-                px-6 py-2.5 rounded-full
+                px-6 py-2.5 rounded-2xl
+                bg-[#b1b1b1]
                 text-base font-medium
-                text-[#A7A7B0] hover:text-[#E5E5E8]
+                text-[#000000] hover:bg-white
                 transition-colors
               "
             >
@@ -97,7 +98,7 @@ export default function Navbar() {
             <Link 
               href="/sign-up"
               className="
-                px-6 py-2.5 rounded-full
+                px-6 py-2.5 rounded-2xl
                 bg-[#D1D1D6] hover:bg-white
                 text-[#000000] text-base font-medium
                 shadow-lg shadow-black/25

@@ -5,7 +5,7 @@ import BackgroundButton from './BackgroundButton'
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-[140px] pb-[200px]">
+    <section className="relative min-h-screen flex items-center justify-center pt-[140px] pb-[30px]">
       <div className="max-w-4xl mx-auto px-6 text-center">
         <BackgroundButton />
 
