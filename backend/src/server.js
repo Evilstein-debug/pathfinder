@@ -8,10 +8,11 @@ import checkpointRoutes from "./routes/checkpointRoutes.js"
 import aiRoutes from "./routes/aiRoutes.js"
 
 const port = process.env.PORT || 8000
+const allowedOrigins = process.env.CORS_ORIGIN.split(",");
 
 const app = express()
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: allowedOrigins,
 }))
 app.use(express.json())
 app.get('/', (req, res) => {
