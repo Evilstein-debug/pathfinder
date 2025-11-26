@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import Hero from '@/components/landing/Hero'
 import MagicBento from '@/components/MagicBento'
 import { features } from '@/lib/featuresData'
+import { AnimatedSection } from '@/components/animations/ScrollAnimations'
 
 // Dynamically import LightRays to avoid SSR issues
 const LightRays = dynamic(() => import('@/components/LightRays'), {
@@ -34,10 +35,13 @@ export default function LandingPage() {
 
       {/* Content Layer */}
       <div className="relative z-10">
-        <Hero />
+        {/* Hero Section - Animated */}
+        <AnimatedSection>
+          <Hero />
+        </AnimatedSection>
 
-        {/* Features Section with MagicBento */}
-        <section id="features" className="py-20 px-6">
+        {/* Features Section - Animated as one unit */}
+        <AnimatedSection className="pt-20 px-6" id="features">
           <div className="max-w-7xl mx-auto">
             {/* Section Header */}
             <div className="text-center mb-20">
@@ -52,6 +56,7 @@ export default function LandingPage() {
                   Succeed
                 </span>
               </h2>
+              
               <p className="text-xl text-[#A7A7B0] max-w-2xl mx-auto leading-relaxed">
                 Powerful features designed to accelerate your learning journey and help you achieve your career goals
               </p>
@@ -75,10 +80,13 @@ export default function LandingPage() {
               />
             </div>
           </div>
-        </section>
+        </AnimatedSection>
 
-        {/* How It Works Section */}
-        <section id="how-it-works" className="min-h-screen flex items-center justify-center px-6">
+        {/* How It Works Section - Animated as one unit */}
+        <AnimatedSection 
+          className="min-h-screen flex items-center justify-center px-6 py-20" 
+          id="how-it-works"
+        >
           <div className="max-w-6xl mx-auto text-center">
             <h2 className="
               font-(family-name:--font-playfair) text-5xl md:text-6xl text-[#E5E5E8] mb-6
@@ -91,27 +99,37 @@ export default function LandingPage() {
                 Works
               </span>
             </h2>
-            <p className="text-xl text-[#A7A7B0] max-w-2xl mx-auto">
+            
+            <p className="text-xl text-[#A7A7B0] max-w-2xl mx-auto mb-16">
               Simple, powerful, and designed for your success
             </p>
             
-            {/* How It Works Content - Coming Soon */}
-            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="p-8 rounded-3xl bg-white/2 border border-white/8">
+            {/* How It Works Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="group p-8 rounded-3xl bg-white/2 border border-white/8 hover:border-white/15 transition-all hover:bg-white/4">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="text-3xl">1</span>
+                </div>
                 <h3 className="text-xl font-semibold text-[#E5E5E8] mb-3">Set Your Goal</h3>
                 <p className="text-[#A7A7B0]">
                   Tell us what you want to achieve and your available timeframe
                 </p>
               </div>
               
-              <div className="p-8 rounded-3xl bg-white/2 border border-white/8">
+              <div className="group p-8 rounded-3xl bg-white/2 border border-white/8 hover:border-white/15 transition-all hover:bg-white/4">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="text-3xl">2</span>
+                </div>
                 <h3 className="text-xl font-semibold text-[#E5E5E8] mb-3">AI Generates Path</h3>
                 <p className="text-[#A7A7B0]">
                   Our AI creates a personalized roadmap with smart checkpoints
                 </p>
               </div>
               
-              <div className="p-8 rounded-3xl bg-white/2 border border-white/8">
+              <div className="group p-8 rounded-3xl bg-white/2 border border-white/8 hover:border-white/15 transition-all hover:bg-white/4">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="text-3xl">3</span>
+                </div>
                 <h3 className="text-xl font-semibold text-[#E5E5E8] mb-3">Track Progress</h3>
                 <p className="text-[#A7A7B0]">
                   Complete checkpoints and watch your progress grow
@@ -119,10 +137,13 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-        </section>
+        </AnimatedSection>
 
-        {/* Pricing Section */}
-        <section id="pricing" className="min-h-screen flex items-center justify-center px-6">
+        {/* Pricing Section - Animated as one unit */}
+        <AnimatedSection 
+          className="min-h-screen flex items-center justify-center px-6 py-20" 
+          id="pricing"
+        >
           <div className="max-w-6xl mx-auto text-center">
             <h2 className="
               font-(family-name:--font-playfair) text-5xl md:text-6xl text-[#E5E5E8] mb-6
@@ -135,33 +156,34 @@ export default function LandingPage() {
                 Pricing
               </span>
             </h2>
+            
             <p className="text-xl text-[#A7A7B0] max-w-2xl mx-auto mb-16">
               Start for free, upgrade when you're ready
             </p>
             
-            {/* Pricing Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-1 gap-8 max-w-4xl mx-auto">
+            {/* Pricing Card */}
+            <div className="grid grid-cols-1 gap-8 max-w-xl mx-auto">
               {/* Free Plan */}
-              <div className="p-8 rounded-3xl bg-white/2 border border-white/8 hover:border-white/15 transition-all">
+              <div className="group p-8 rounded-3xl bg-white/2 border border-white/8 hover:border-white/15 transition-all hover:shadow-2xl hover:shadow-black/20">
                 <h3 className="text-2xl font-semibold text-[#E5E5E8] mb-2">Free</h3>
                 <div className="mb-6">
                   <span className="text-5xl font-bold text-[#E5E5E8]">$0</span>
                   <span className="text-[#A7A7B0]">/month</span>
                 </div>
                 <ul className="text-left space-y-3 mb-8">
-                  <li className="flex items-center gap-3 text-[#A7A7B0]">
+                  <li className="flex items-center gap-3 text-[#A7A7B0] group-hover:text-[#E5E5E8] transition-colors">
                     <svg className="w-5 h-5 text-green-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     <span>3 AI-generated paths</span>
                   </li>
-                  <li className="flex items-center gap-3 text-[#A7A7B0]">
+                  <li className="flex items-center gap-3 text-[#A7A7B0] group-hover:text-[#E5E5E8] transition-colors">
                     <svg className="w-5 h-5 text-green-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     <span>Basic progress tracking</span>
                   </li>
-                  <li className="flex items-center gap-3 text-[#A7A7B0]">
+                  <li className="flex items-center gap-3 text-[#A7A7B0] group-hover:text-[#E5E5E8] transition-colors">
                     <svg className="w-5 h-5 text-green-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
@@ -174,19 +196,17 @@ export default function LandingPage() {
                   border border-white/10 hover:border-white/15
                   text-[#E5E5E8] font-medium
                   transition-all
+                  group-hover:scale-[1.02]
                 ">
                   Get Started
                 </button>
               </div>
-
-              {/* Pro Plan */}
-              
             </div>
           </div>
-        </section>
+        </AnimatedSection>
 
-        {/* Footer */}
-        <footer className="border-t border-white/8 py-12">
+        {/* Footer - Animated */}
+        <AnimatedSection className="border-t border-white/8 py-12">
           <div className="max-w-6xl mx-auto px-6">
             <div className="flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="text-center md:text-left">
@@ -196,7 +216,7 @@ export default function LandingPage() {
                     href="https://github.com/Evilstein-debug" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-[#E5E5E8] hover:underline"
+                    className="text-[#E5E5E8] hover:underline transition-colors"
                   >
                     Tejas Pathak
                   </a>
@@ -215,7 +235,7 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-        </footer>
+        </AnimatedSection>
       </div>
     </main>
   )
