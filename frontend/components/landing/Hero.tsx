@@ -2,36 +2,41 @@
 
 import Link from 'next/link'
 import BackgroundButton from './BackgroundButton'
+import { useTheme } from '@/contexts/ThemeContext'
 
 export default function Hero() {
+  const { theme } = useTheme()
+
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-[140px] pb-[30px]">
       <div className="max-w-4xl mx-auto px-6 text-center">
         <BackgroundButton />
 
         {/* Headline */}
-        <h1 className="
+        <h1 className={`
           text-[52px] leading-[1.2]
           tracking-[-0.5px]
-          text-[#E5E5E8]
           mb-6
           font-(family-name:--font-playfair)
-        ">
+          ${theme === 'dark' ? 'text-[#E5E5E8]' : 'text-[#1a1a1a]'}
+        `}>
           Your Personalized Roadmap to{' '}
-          <span className="
-            bg-linear-to-r from-white via-white/90 to-white/70
+          <span className={`
             bg-clip-text text-transparent
-          ">
+            ${theme === 'dark'
+              ? 'bg-linear-to-r from-white via-white/90 to-white/70'
+              : 'bg-linear-to-r from-[#1a1a1a] via-[#2a2a2a] to-[#4a4a4a]'
+            }
+          `}>
             Career Success
           </span>
         </h1>
 
         {/* Subheadline */}
-        <p className="
-          text-xl text-[#A7A7B0] 
-          max-w-2xl mx-auto mb-12
-          leading-relaxed
-        ">
+        <p className={`
+          text-xl max-w-2xl mx-auto mb-12 leading-relaxed
+          ${theme === 'dark' ? 'text-[#A7A7B0]' : 'text-[#4a4a4a]'}
+        `}>
           Generate AI-powered learning paths tailored to your goals. 
           Track progress with smart checkpoints and achieve your dreams faster.
         </p>
@@ -40,16 +45,18 @@ export default function Hero() {
         <div className="flex items-center justify-center gap-6 flex-wrap">
           <Link 
             href="/sign-up"
-            className="
+            className={`
               inline-flex items-center gap-2
               px-8 py-4 rounded-4xl
-              bg-[#D1D1D6] hover:bg-white
-              text-[#000000] text-base font-medium
-              shadow-[0_4px_20px_rgba(0,0,0,0.25)]
-              hover:shadow-[0_6px_30px_rgba(0,0,0,0.35)]
+              text-base font-medium
+              shadow-lg
               transition-all duration-200
               group
-            "
+              ${theme === 'dark'
+                ? 'bg-[#D1D1D6] hover:bg-white text-[#000000] shadow-black/25 hover:shadow-black/30'
+                : 'bg-[#1a1a1a] hover:bg-black text-white shadow-black/15 hover:shadow-black/25'
+              }
+            `}
           >
             <span>Start Your Journey</span>
             <svg 
@@ -69,15 +76,16 @@ export default function Hero() {
 
           <Link 
             href="#how-it-works"
-            className="
+            className={`
               inline-flex items-center gap-2
               px-8 py-4 rounded-4xl
-              bg-white/5 hover:bg-white/8
-              border border-white/10 hover:border-white/15
-              text-[#A7A7B0] hover:text-[#E5E5E8]
               text-base font-medium
               transition-all duration-200
-            "
+              ${theme === 'dark'
+                ? 'bg-white/5 hover:bg-white/8 border border-white/10 hover:border-white/15 text-[#A7A7B0] hover:text-[#E5E5E8]'
+                : 'bg-black/5 hover:bg-black/8 border border-black/10 hover:border-black/15 text-[#4a4a4a] hover:text-[#1a1a1a]'
+              }
+            `}
           >
             <svg 
               className="w-5 h-5 hidden lg:block" 

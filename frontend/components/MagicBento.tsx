@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
 
 export interface BentoCardProps {
+  colorDark?: string;
+  colorLight?: string;
   color?: string;
   title?: string;
   description?: string;
@@ -23,6 +25,7 @@ export interface BentoProps {
   clickEffect?: boolean;
   enableMagnetism?: boolean;
   cards?: BentoCardProps[];
+  theme?: 'light' | 'dark';
 }
 
 const DEFAULT_PARTICLE_COUNT = 12;
@@ -529,6 +532,7 @@ const MagicBento: React.FC<BentoProps> = ({
   clickEffect = true,
   enableMagnetism = true,
   cards = cardData,
+  theme = 'dark',
 }) => {
   const gridRef = useRef<HTMLDivElement>(null);
   const isMobile = useMobileDetection();
@@ -544,11 +548,11 @@ const MagicBento: React.FC<BentoProps> = ({
             --glow-intensity: 0;
             --glow-radius: 200px;
             --glow-color: ${glowColor};
-            --border-color: rgba(255, 255, 255, 0.08);
-            --border-color-hover: rgba(255, 255, 255, 0.15);
-            --background-dark: #868686;
-            --white: #E5E5E8;
-            --text-secondary: #A7A7B0;
+            --border-color: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'};
+            --border-color-hover: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)'};
+            --background-dark: ${theme === 'dark' ? '#868686' : '#d4d4d4'};
+            --white: ${theme === 'dark' ? '#E5E5E8' : '#1a1a1a'};
+            --text-secondary: ${theme === 'dark' ? '#A7A7B0' : '#4a4a4a'};
             --purple-primary: rgba(132, 0, 255, 1);
             --purple-glow: rgba(132, 0, 255, 0.2);
             --purple-border: rgba(132, 0, 255, 0.8);
@@ -683,8 +687,12 @@ const MagicBento: React.FC<BentoProps> = ({
               enableBorderGlow ? 'card--border-glow' : ''
             }`;
 
+            const cardColor = theme === 'dark' 
+              ? (card.colorDark || card.color || 'var(--background-dark)')
+              : (card.colorLight || card.color || 'var(--background-dark)');
+
             const cardStyle = {
-              backgroundColor: card.color || 'var(--background-dark)',
+              backgroundColor: cardColor,
               borderColor: 'var(--border-color)',
               color: 'var(--white)',
               '--glow-x': '50%',
@@ -706,10 +714,10 @@ const MagicBento: React.FC<BentoProps> = ({
                   clickEffect={clickEffect}
                   enableMagnetism={enableMagnetism}
                 >
-                  <div className="card__header flex justify-between gap-3 relative text-white">
+                  <div className="card__header flex justify-between gap-3 relative" style={{ color: 'var(--white)' }}>
                     <span className="card__label text-base opacity-70">{card.label}</span>
                   </div>
-                  <div className="card__content flex flex-col relative text-white">
+                  <div className="card__content flex flex-col relative" style={{ color: 'var(--white)' }}>
                     <h3 className={`card__title font-normal text-base m-0 mb-1 ${textAutoHide ? 'text-clamp-1' : ''}`}>
                       {card.title}
                     </h3>
@@ -842,7 +850,7 @@ const MagicBento: React.FC<BentoProps> = ({
                 <div className="card__header flex justify-between gap-3 relative text-white">
                   <span className="card__label text-base opacity-70">{card.label}</span>
                 </div>
-                <div className="card__content flex flex-col relative text-white">
+                <div className="card__content flex flex-col relative" style={{ color: 'var(--white)' }}>
                   <h3 className={`card__title font-normal text-base m-0 mb-1 ${textAutoHide ? 'text-clamp-1' : ''}`}>
                     {card.title}
                   </h3>
