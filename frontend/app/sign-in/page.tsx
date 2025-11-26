@@ -5,9 +5,11 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { login } from '@/lib/api/auth'
 import Link from 'next/link'
+import { useTheme } from '@/contexts/ThemeContext'
 
 export default function SignInPage() {
   const router = useRouter()
+  const { theme } = useTheme()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -40,24 +42,40 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden">
+    <div className={`
+      min-h-screen flex items-center justify-center relative overflow-hidden
+      ${theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]'}
+    `}>
       {/* Subtle gradient background */}
-      <div className="absolute inset-0 bg-linear-to-br from-white/5 via-transparent to-white/5"></div>
+      <div className={`
+        absolute inset-0
+        ${theme === 'dark'
+          ? 'bg-linear-to-br from-white/5 via-transparent to-white/5'
+          : 'bg-linear-to-br from-black/5 via-transparent to-black/5'
+        }
+      `}></div>
       
       <div className="my-10 relative z-10 max-w-md w-full mx-4">
         {/* Card */}
-        <div className="
-          p-8 rounded-3xl
-          bg-white/3 backdrop-blur-xl
-          border border-white/8
-          shadow-2xl shadow-black/50
-        ">
+        <div className={`
+          p-8 rounded-3xl backdrop-blur-xl shadow-2xl
+          ${theme === 'dark'
+            ? 'bg-white/3 border border-white/8 shadow-black/50'
+            : 'bg-black/3 border border-black/8 shadow-black/20'
+          }
+        `}>
           {/* Logo & Title */}
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-2 mb-4 group">
-              <div className="w-8 h-8 bg-linear-to-br from-white/20 to-white/5 rounded-lg flex items-center justify-center border border-white/10 group-hover:border-white/20 transition-colors">
+              <div className={`
+                w-8 h-8 rounded-lg flex items-center justify-center border transition-colors
+                ${theme === 'dark'
+                  ? 'bg-linear-to-br from-white/20 to-white/5 border-white/10 group-hover:border-white/20'
+                  : 'bg-linear-to-br from-black/20 to-black/5 border-black/10 group-hover:border-black/20'
+                }
+              `}>
                 <svg 
-                  className="w-5 h-5 text-white/90" 
+                  className={`w-5 h-5 ${theme === 'dark' ? 'text-white/90' : 'text-black/90'}`}
                   fill="none" 
                   viewBox="0 0 24 24" 
                   stroke="currentColor"
@@ -71,12 +89,13 @@ export default function SignInPage() {
                 </svg>
               </div>
             </Link>
-            <h1 className="
-              font-(family-name:--font-playfair) text-3xl font-semibold text-[#E5E5E8] mb-2
-            ">
+            <h1 className={`
+              font-(family-name:--font-playfair) text-3xl font-semibold mb-2
+              ${theme === 'dark' ? 'text-[#E5E5E8]' : 'text-[#1a1a1a]'}
+            `}>
               Welcome Back
             </h1>
-            <p className="text-[#A7A7B0] text-sm">
+            <p className={`text-sm ${theme === 'dark' ? 'text-[#A7A7B0]' : 'text-[#4a4a4a]'}`}>
               Sign in to continue your journey
             </p>
           </div>
@@ -95,16 +114,17 @@ export default function SignInPage() {
           {/* Google OAuth Button */}
           <button
             onClick={handleGoogleLogin}
-            className="
+            className={`
               w-full flex items-center justify-center gap-3
               px-6 py-3.5 rounded-2xl
-              bg-white/5 hover:bg-white/8
-              border border-white/10 hover:border-white/15
-              text-[#E5E5E8] text-base font-medium
+              text-base font-medium
               transition-all duration-200
-              group
-              mb-6
-            "
+              group mb-6
+              ${theme === 'dark'
+                ? 'bg-white/5 hover:bg-white/8 border border-white/10 hover:border-white/15 text-[#E5E5E8]'
+                : 'bg-black/5 hover:bg-black/8 border border-black/10 hover:border-black/15 text-[#1a1a1a]'
+              }
+            `}
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
@@ -130,10 +150,12 @@ export default function SignInPage() {
           {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/8"></div>
+              <div className={`w-full border-t ${theme === 'dark' ? 'border-white/8' : 'border-black/8'}`}></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-transparent text-[#A7A7B0]">Or sign in with email</span>
+              <span className={`px-4 bg-transparent ${theme === 'dark' ? 'text-[#A7A7B0]' : 'text-[#4a4a4a]'}`}>
+                Or sign in with email
+              </span>
             </div>
           </div>
 
@@ -141,7 +163,7 @@ export default function SignInPage() {
           <form onSubmit={handleEmailLogin} className="space-y-4">
             {/* Email Input */}
             <div>
-              <label className="block text-sm font-medium text-[#A7A7B0] mb-2">
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-[#A7A7B0]' : 'text-[#4a4a4a]'}`}>
                 Email
               </label>
               <input
@@ -149,20 +171,21 @@ export default function SignInPage() {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="
+                className={`
                   w-full px-4 py-3 rounded-2xl
-                  bg-white/3 border border-white/8
-                  text-[#E5E5E8] placeholder:text-[#A7A7B0]/50
-                  focus:outline-none focus:border-white/15
-                  transition-colors
-                "
+                  focus:outline-none transition-colors
+                  ${theme === 'dark'
+                    ? 'bg-white/3 border border-white/8 text-[#E5E5E8] placeholder:text-[#A7A7B0]/50 focus:border-white/15'
+                    : 'bg-black/3 border border-black/8 text-[#1a1a1a] placeholder:text-[#4a4a4a]/50 focus:border-black/15'
+                  }
+                `}
                 required
               />
             </div>
 
             {/* Password Input */}
             <div>
-              <label className="block text-sm font-medium text-[#A7A7B0] mb-2">
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-[#A7A7B0]' : 'text-[#4a4a4a]'}`}>
                 Password
               </label>
               <input
@@ -170,13 +193,14 @@ export default function SignInPage() {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="
+                className={`
                   w-full px-4 py-3 rounded-2xl
-                  bg-white/3 border border-white/8
-                  text-[#E5E5E8] placeholder:text-[#A7A7B0]/50
-                  focus:outline-none focus:border-white/15
-                  transition-colors
-                "
+                  focus:outline-none transition-colors
+                  ${theme === 'dark'
+                    ? 'bg-white/3 border border-white/8 text-[#E5E5E8] placeholder:text-[#A7A7B0]/50 focus:border-white/15'
+                    : 'bg-black/3 border border-black/8 text-[#1a1a1a] placeholder:text-[#4a4a4a]/50 focus:border-black/15'
+                  }
+                `}
                 required
               />
             </div>
@@ -185,7 +209,13 @@ export default function SignInPage() {
             <div className="text-right">
               <Link 
                 href="/forgot-password"
-                className="text-sm text-[#A7A7B0] hover:text-[#E5E5E8] transition-colors"
+                className={`
+                  text-sm transition-colors
+                  ${theme === 'dark'
+                    ? 'text-[#A7A7B0] hover:text-[#E5E5E8]'
+                    : 'text-[#4a4a4a] hover:text-[#1a1a1a]'
+                  }
+                `}
               >
                 Forgot password?
               </Link>
@@ -195,16 +225,17 @@ export default function SignInPage() {
             <button
               type="submit"
               disabled={loading}
-              className="
+              className={`
                 w-full px-6 py-3.5 rounded-2xl
-                bg-[#D1D1D6] hover:bg-white
-                text-[#000000] text-base font-medium
-                shadow-lg shadow-black/25
-                hover:shadow-xl hover:shadow-black/30
-                transition-all duration-200
+                text-base font-medium
+                shadow-lg transition-all duration-200
                 disabled:opacity-50 disabled:cursor-not-allowed
                 mt-6
-              "
+                ${theme === 'dark'
+                  ? 'bg-[#D1D1D6] hover:bg-white text-[#000000] shadow-black/25 hover:shadow-black/30'
+                  : 'bg-[#1a1a1a] hover:bg-black text-white shadow-black/15 hover:shadow-black/25'
+                }
+              `}
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -233,11 +264,11 @@ export default function SignInPage() {
           </form>
 
           {/* Sign Up Link */}
-          <p className="text-center text-sm text-[#A7A7B0] mt-6">
+          <p className={`text-center text-sm mt-6 ${theme === 'dark' ? 'text-[#A7A7B0]' : 'text-[#4a4a4a]'}`}>
             Don't have an account?{' '}
             <Link 
               href="/sign-up" 
-              className="text-[#E5E5E8] hover:underline font-medium"
+              className={`font-medium hover:underline ${theme === 'dark' ? 'text-[#E5E5E8]' : 'text-[#1a1a1a]'}`}
             >
               Sign up
             </Link>
@@ -247,12 +278,14 @@ export default function SignInPage() {
         {/* Back to Home */}
         <Link 
           href="/"
-          className="
+          className={`
             flex items-center justify-center gap-2
-            mt-6 text-[#A7A7B0] hover:text-[#E5E5E8]
-            text-sm font-medium
-            transition-colors
-          "
+            mt-6 text-sm font-medium transition-colors
+            ${theme === 'dark'
+              ? 'text-[#A7A7B0] hover:text-[#E5E5E8]'
+              : 'text-[#4a4a4a] hover:text-[#1a1a1a]'
+            }
+          `}
         >
           <svg 
             className="w-4 h-4" 
