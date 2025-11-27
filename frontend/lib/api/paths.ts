@@ -10,12 +10,14 @@ export interface Path {
   _id: string
   user: string
   title: string
-  goalType: string
+  goalType: 'shortTerm' | 'longTerm'
   timeframe: number
   feasibilityScore?: number
   checkpoints: Checkpoint[]
   createdAt: string
   updatedAt: string
+  progress?: number
+  userGoalDescription?: string
 }
 
 export interface Checkpoint {

@@ -1,11 +1,5 @@
 import apiClient from '../axios'
 
-export interface CheckpointData {
-  title: string
-  description?: string
-  duration: string
-}
-
 export interface Checkpoint {
   _id: string
   pathID: string
@@ -16,48 +10,30 @@ export interface Checkpoint {
   completed: boolean
 }
 
-// Add Checkpoint
-export const addCheckpoint = async (
-  pathId: string, 
-  data: CheckpointData
-): Promise<Checkpoint> => {
-  const response = await apiClient.post(`/checkpoints/${pathId}/add`, data)
-  return response.data.checkpoint
-}
-
-// Update Checkpoint
-export const updateCheckpoint = async (
-  checkpointId: string,
-  updates: Partial<CheckpointData>
-): Promise<Checkpoint> => {
-  const response = await apiClient.put(`/checkpoints/update/${checkpointId}`, updates)
-  return response.data.checkpoint
-}
-
-// Toggle Checkpoint Completion
 export const toggleCheckpoint = async (checkpointId: string): Promise<Checkpoint> => {
   const response = await apiClient.patch(`/checkpoints/toggle/${checkpointId}`)
-  return response.data.checkpoint
+  return response.data
 }
 
-// Delete Checkpoint
+export const addCheckpoint = async (pathId: string, data: Partial<Checkpoint>): Promise<Checkpoint> => {
+  const response = await apiClient.post(`/checkpoints/${pathId}/add`, data)
+  return response.data
+}
+
+export const updateCheckpoint = async (checkpointId: string, data: Partial<Checkpoint>): Promise<Checkpoint> => {
+  const response = await apiClient.put(`/checkpoints/update/${checkpointId}`, data)
+  return response.data
+}
+
 export const deleteCheckpoint = async (checkpointId: string): Promise<void> => {
   await apiClient.delete(`/checkpoints/delete/${checkpointId}`)
 }
 
-// Get Checkpoints by Path
 export const getCheckpointsByPath = async (pathId: string): Promise<Checkpoint[]> => {
   const response = await apiClient.get(`/checkpoints/${pathId}`)
   return response.data
 }
 
-// Reorder Checkpoints
-export const reorderCheckpoints = async (
-  pathId: string,
-  checkpointIds: string[]
-): Promise<Checkpoint[]> => {
-  const response = await apiClient.put(`/checkpoints/${pathId}/reorder`, {
-    checkpointIds
-  })
-  return response.data.checkpoints
+export const reorderCheckpoints = async (pathId: string, checkpointIds: string[]): Promise<void> => {
+  await apiClient.put(`/checkpoints/${pathId}/reorder`, { checkpointIds })
 }
