@@ -3,30 +3,29 @@ import { generateTokens, generateAccessToken } from "../utils/generateTokens.js"
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
-//register
+// Register - validation now handled by middleware
 export const register = async (req, res) => {
     try {
         const { username, email, password } = req.body
-        if(!username || !email || !password) {
-            return res.status(400).json({
-                message: "All fields are required!"
-            })
-        }
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if(!emailRegex.test(email)){
-            res.status(400).json({message: "Enter a valid email address."})
-        }
+        // req.body is already validated by middleware
+        
+        // Check for existing user
         const existingUser = await User.findOne({
-            $or: [{email}, {username}]
+            $or: [{email: email.toLowerCase()}, {username}]
         })
+        
         if(existingUser) {
             return res.status(409).json({
-                message: "User already exists!"
+                message: existingUser.email === email.toLowerCase() 
+                    ? "Email already registered" 
+                    : "Username already taken"
             })
         }
+        
+        // Create user
         const user = await User.create({
             username,
-            email,
+            email: email.toLowerCase(), // Store email in lowercase
             password
         })
 
@@ -49,7 +48,7 @@ export const register = async (req, res) => {
         })
     }
     catch (error) {
-        console.error("Registeration error:", error)
+        console.error("Registration error:", error)
         res.status(500).json({
             message: "Error registering the user.",
             error: error.message
@@ -57,25 +56,23 @@ export const register = async (req, res) => {
     }
 }
 
-//login
+// Login - validation now handled by middleware
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body
-        if(!email || !password) {
-            return res.status(400).json({
-                message: "Email and password is required."
-            })
-        }
-        const user = await User.findOne({email})
+        
+        const user = await User.findOne({email: email.toLowerCase()})
+        
         if(!user) {
             return res.status(401).json({
-                message: "Invalid Email or Password."
+                message: "Invalid email or password"
             })
         }
+        
         const isPasswordValid = await user.matchPassword(password)
         if(!isPasswordValid) {
             return res.status(401).json({
-                message: "Invalid Email or Password."
+                message: "Invalid email or password"
             })
         }
 
@@ -89,6 +86,7 @@ export const login = async (req, res) => {
             email: user.email,
             createdAt: user.createdAt
         }
+        
         res.status(200).json({
             message: "Login Successful",
             user: userResponse,
@@ -105,55 +103,29 @@ export const login = async (req, res) => {
     }
 }
 
-//POST /api/auth/refresh
+// Refresh token - validation now handled by middleware
 export const refreshAccessToken = async (req, res) => {
     try {
         const { refreshToken } = req.body;
 
-        if (!refreshToken) {
-            return res.status(401).json({ 
-                message: "Refresh token is required" 
-            });
-        }
-
-        // Verify refresh token
-        const decoded = jwt.verify(
-            refreshToken, 
-            process.env.REFRESH_TOKEN_SECRET
-        );
-
-        // Find user and check if refresh token matches
+        const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
         const user = await User.findById(decoded._id);
 
-        if (!user) {
+        if (!user || user.refreshToken !== refreshToken) {
             return res.status(401).json({ 
                 message: "Invalid refresh token" 
             });
         }
 
-        if (user.refreshToken !== refreshToken) {
-            return res.status(401).json({ 
-                message: "Refresh token is expired or invalid" 
-            });
-        }
-
-        // Generate new access token
-        const accessToken = generateAccessToken(user._id);
+        const newAccessToken = generateAccessToken(user._id);
 
         res.status(200).json({
-            message: "Access token refreshed successfully",
-            accessToken
+            message: "Access token refreshed",
+            accessToken: newAccessToken
         });
-
     } catch (error) {
-        console.error("Refresh token error:", error);
-        
-        if (error.name === "JsonWebTokenError") {
-            return res.status(401).json({ 
-                message: "Invalid refresh token" 
-            });
-        }
-        
+        console.error("Token refresh error:", error);
+
         if (error.name === "TokenExpiredError") {
             return res.status(401).json({ 
                 message: "Refresh token expired" 
@@ -167,24 +139,18 @@ export const refreshAccessToken = async (req, res) => {
     }
 };
 
-// Social login (Google, GitHub, etc.)
+// Social login (Google, GitHub, etc.) - validation now handled by middleware
 export const oauthLogin = async (req, res) => {
   try {
     const { email, username, provider } = req.body
 
-    if (!email || !username || !provider) {
-      return res.status(400).json({
-        message: "Email, username, and provider are required"
-      })
-    }
-
-    let user = await User.findOne({ email })
+    let user = await User.findOne({ email: email.toLowerCase() })
 
     if (!user) {
       user = await User.create({
         username,
-        email,
-        password: `${provider}_${Date.now()}` //dummy password
+        email: email.toLowerCase(),
+        password: `${provider}_${Date.now()}_${Math.random().toString(36)}` // Secure random password
       })
       console.log(`New social user created: ${email} via ${provider}`)
     }
@@ -202,48 +168,34 @@ export const oauthLogin = async (req, res) => {
     }
 
     res.status(200).json({
-      message: "Social login successful",
+      message: "OAuth login successful",
       user: userResponse,
       accessToken,
       refreshToken
     })
   } catch (error) {
-    console.error("Social login error:", error)
+    console.error("OAuth login error:", error)
     res.status(500).json({
-      message: "Error with social login",
+      message: "Error during OAuth login",
       error: error.message
     })
   }
 }
 
-// logout
-// @route   POST /api/auth/logout
+// Logout
 export const logout = async (req, res) => {
     try {
-        const userId = req.user?._id; // Assumes auth middleware sets req.user
-
-        if (!userId) {
-            return res.status(401).json({ 
-                message: "User not authenticated" 
-            });
-        }
-
-        // Remove refresh token from database
-        await User.findByIdAndUpdate(
-            userId,
-            { $unset: { refreshToken: "" } },
-            { new: true }
-        );
-
+        const userId = req.user._id
+        await User.findByIdAndUpdate(userId, { refreshToken: null })
+        
         res.status(200).json({
-            message: "Logout successful"
-        });
-
+            message: "Logged out successfully"
+        })
     } catch (error) {
-        console.error("Logout error:", error);
-        res.status(500).json({ 
+        console.error("Logout error:", error)
+        res.status(500).json({
             message: "Error logging out",
-            error: error.message 
-        });
+            error: error.message
+        })
     }
-};
+}

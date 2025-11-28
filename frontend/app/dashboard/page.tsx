@@ -79,6 +79,68 @@ export default function DashboardPage() {
     )
   }
 
+  const getDisplayProgress = (p: Path): number => {
+    const anyP = p as any;
+
+    // Prefer an explicit field if provided by API
+    let raw =
+      anyP.progress ??
+      anyP.progressPercentage ??
+      anyP.completionPercentage ??
+      anyP.completion ??
+      anyP.percentComplete;
+
+    let value: number | undefined;
+    if (typeof raw === 'number') value = raw;
+    else if (typeof raw === 'string') {
+      const parsed = parseFloat(raw);
+      if (!Number.isNaN(parsed)) value = parsed;
+    }
+
+    if (value !== undefined) {
+      // Some APIs return 0..1
+      if (value <= 1) value = value * 100;
+      return Math.min(100, Math.max(0, Math.round(value)));
+    }
+
+    // Fallback: compute from checkpoints/tasks if available
+    const checkpoints = Array.isArray(anyP.checkpoints) ? anyP.checkpoints : [];
+    if (checkpoints.length) {
+      let total = 0;
+      let done = 0;
+
+      for (const cp of checkpoints) {
+        const tasks = Array.isArray(cp?.tasks) ? cp.tasks : Array.isArray(cp?.subtasks) ? cp.subtasks : [];
+
+        if (tasks.length) {
+          total += tasks.length;
+          for (const t of tasks) {
+            const status = String(t?.status ?? t?.state ?? '').toLowerCase();
+            if (t?.completed === true || t?.isCompleted === true || status === 'done' || status === 'complete' || status === 'completed' || t?.progress === 100) {
+              done += 1;
+            } else if (typeof t?.progress === 'number') {
+              done += Math.min(1, Math.max(0, t.progress / 100));
+            }
+          }
+        } else {
+          total += 1;
+          const cpStatus = String(cp?.status ?? cp?.state ?? '').toLowerCase();
+          if (cp?.completed === true || cp?.isCompleted === true || cpStatus === 'done' || cpStatus === 'complete' || cpStatus === 'completed' || cp?.progress === 100) {
+            done += 1;
+          } else if (typeof cp?.progress === 'number') {
+            done += Math.min(1, Math.max(0, cp.progress / 100));
+          }
+        }
+      }
+
+      if (total > 0) {
+        return Math.min(100, Math.max(0, Math.round((done / total) * 100)));
+      }
+    }
+
+    return 0;
+  }
+
   return (
     <div className={`
       min-h-screen pt-32 pb-20 px-13
@@ -224,7 +286,7 @@ export default function DashboardPage() {
                       : 'bg-black/5 text-[#4a4a4a]'
                     }
                   `}>
-                    {path.progress || 0}% Complete
+                    {getDisplayProgress(path)}% Complete
                   </div>
                 </div>
 
@@ -269,7 +331,7 @@ export default function DashboardPage() {
                         : 'bg-linear-to-r from-[#4a4a4a] to-[#1a1a1a]'
                       }
                     `}
-                    style={{ width: `${path.progress || 0}%` }}
+                    style={{ width: `${getDisplayProgress(path)}%` }}
                   />
                 </div>
 

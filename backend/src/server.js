@@ -6,20 +6,33 @@ import authRoutes from "./routes/authRoutes.js"
 import pathRoutes from "./routes/pathRoutes.js"
 import checkpointRoutes from "./routes/checkpointRoutes.js"
 import aiRoutes from "./routes/aiRoutes.js"
+import rateLimit from "express-rate-limit";
+import helmet from "helmet"
 
 const port = process.env.PORT || 8000
 const allowedOrigins = process.env.CORS_ORIGIN.split(",");
 
 const app = express()
+
+app.use(helmet())
+
 app.use(cors({
     origin: allowedOrigins,
 }))
+
 app.use(express.json())
+
+const authLimiter = rateLimit({
+  windowMs: 60000,
+  max: 5,
+  message: "Too many login attempts",
+});
+
 app.get('/', (req, res) => {
     res.status(200).json({message: "API is running."})
 })
 
-app.use("/api/auth", authRoutes)
+app.use("/api/auth",authLimiter, authRoutes)
 app.use("/api/paths", pathRoutes)
 app.use("/api/checkpoints", checkpointRoutes)
 app.use("/api/ai", aiRoutes)
