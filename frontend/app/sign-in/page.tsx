@@ -22,15 +22,20 @@ export default function SignInPage() {
     setError('')
 
     try {
-      const data = await login({ email, password })
-      
-      // Store tokens in localStorage
-      localStorage.setItem('accessToken', data.accessToken)
-      localStorage.setItem('refreshToken', data.refreshToken)
-      
+      const result = await signIn('credentials', {
+        redirect: false,
+        email,
+        password,
+      })
+
+      if (result?.error) {
+        setError(result.error)
+        return
+      }
+
       router.push('/dashboard')
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed')
+      setError('Login failed')
     } finally {
       setLoading(false)
     }

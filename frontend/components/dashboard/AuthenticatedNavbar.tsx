@@ -14,14 +14,7 @@ export default function AuthenticatedNavbar() {
 
   const handleLogout = async () => {
     try {
-      // Clear local storage
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
-      
-      // Sign out from NextAuth
       await signOut({ redirect: false })
-      
-      // Redirect to home
       router.push('/')
     } catch (error) {
       console.error('Logout error:', error)

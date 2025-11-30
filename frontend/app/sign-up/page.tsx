@@ -25,7 +25,6 @@ export default function SignUpPage() {
     setLoading(true)
     setError('')
 
-    // Validation
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match')
       setLoading(false)
@@ -39,16 +38,26 @@ export default function SignUpPage() {
     }
 
     try {
-      const data = await register({
+      // Register user
+      await register({
         username: formData.username,
         email: formData.email,
         password: formData.password
       })
       
-      // Store tokens
-      localStorage.setItem('accessToken', data.accessToken)
-      localStorage.setItem('refreshToken', data.refreshToken)
-      
+      // Auto sign-in after registration
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: formData.email,
+        password: formData.password,
+      })
+
+      if (result?.error) {
+        setError('Registration successful but login failed. Please sign in.')
+        router.push('/sign-in')
+        return
+      }
+
       router.push('/dashboard')
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed')

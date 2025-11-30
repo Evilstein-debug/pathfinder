@@ -16,23 +16,23 @@ export default function DashboardPage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    // Check authentication
     if (status === 'loading') return
     
-    const accessToken = localStorage.getItem('accessToken')
-    if (status === 'unauthenticated' && !accessToken) {
+    if (status === 'unauthenticated') {
       router.push('/sign-in')
       return
     }
 
-    // Fetch user's paths
     const fetchPaths = async () => {
       try {
         setLoading(true)
+        setError('')
         const data = await getAllPaths()
         setPaths(data)
       } catch (err: any) {
-        setError('Failed to load paths')
+        if (err.response?.status !== 403) {
+          setError('Failed to load paths')
+        }
         console.error(err)
       } finally {
         setLoading(false)
