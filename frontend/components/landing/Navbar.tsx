@@ -193,7 +193,7 @@ export default function Navbar() {
           <div 
             className={`
               fixed inset-0 backdrop-blur-sm z-40 lg:hidden
-              ${theme === 'dark' ? 'bg-black/60' : 'bg-black/40'}
+              ${theme === 'dark' ? 'bg-black/60' : 'bg-white/40'}
             `}
             onClick={closeMobileMenu}
           />

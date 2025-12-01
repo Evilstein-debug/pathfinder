@@ -383,7 +383,7 @@ export default function LandingPage() {
                   Terms
                 </a>
                 <a 
-                  href="mailto:contact@pathfinder.com" 
+                  href="mailto:tejaspathak2005@gmail.com" 
                   className={`
                     transition-colors
                     ${theme === 'dark'
