@@ -6,6 +6,7 @@ import MagicBento from '@/components/MagicBento'
 import { features } from '@/lib/featuresData'
 import { AnimatedSection } from '@/components/animations/ScrollAnimations'
 import { useTheme } from '@/contexts/ThemeContext'
+import Link from 'next/link'
 
 // Dynamically import LightRays to avoid SSR issues
 const LightRays = dynamic(() => import('@/components/LightRays'), {
@@ -319,16 +320,18 @@ export default function LandingPage() {
                     <span>Community support</span>
                   </li>
                 </ul>
-                <button className={`
-                  w-full px-6 py-3 rounded-2xl font-medium
-                  transition-all group-hover:scale-[1.02]
-                  ${theme === 'dark'
-                    ? 'bg-white/5 hover:bg-white/8 border border-white/10 hover:border-white/15 text-[#E5E5E8]'
-                    : 'bg-black/5 hover:bg-black/8 border border-black/10 hover:border-black/15 text-[#1a1a1a]'
-                  }
-                `}>
-                  Get Started
-                </button>
+                <Link href="/sign-up">
+                  <div className={`
+                    w-full px-6 py-3 rounded-2xl font-medium
+                    transition-all group-hover:scale-[1.02]
+                    ${theme === 'dark'
+                      ? 'bg-white/5 hover:bg-white/8 border border-white/10 hover:border-white/15 text-[#E5E5E8]'
+                      : 'bg-black/5 hover:bg-black/8 border border-black/10 hover:border-black/15 text-[#1a1a1a]'
+                    }
+                  `}>
+                    Get Started
+                  </div>
+                </Link>
               </div>
             </div>
           </div>
